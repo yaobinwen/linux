@@ -25,4 +25,23 @@ README by ywen
 How to Build
 ------------
 
+Reference: [How to Compile a Linux Kernel](https://www.linux.com/topic/desktop/how-compile-linux-kernel-0/)
+
 1. Install `ansible` (if not installed by the VM provisioner): `sudo ./ansible/ansible-bootstrap.sh`
+2. Install the necessary development tools:
+  - 2.1 `cd ansible`
+  - 2.2 `ansible-playbook -K -vvv dev-env.yml`
+3. Configure the kernel:
+  - 3.1 `cd` into the root directory of kernel source.
+  - 3.2 `cp /boot/config-$(uname -r) .config` to copy the currently used kernel configuration.
+  - 3.3 `make menuconfig`
+  - 3.4 You can use the default configuration, but make sure to `Save` in order to overwrite the configuration file (`.config`) so the later `make` wouldn't prompt questions.
+    - The reason is: the `/boot/config-$(uname -r)` is for an older version of kernel, so its configuration file may not have the options that the newer version of kernel uses.
+4. Build the kernel:
+  - 4.1 `cd` into the root directory of kernel source.
+  - 4.2 `make` (which will take long time)
+  - 4.3 `make modules_install` (which will take some time)
+  - 4.4 `sudo make install`
+5. Enable the kernel for boot:
+  - 5.1 `sudo update-initramfs -c -k 4.17-rc2`
+  - 5.2 `sudo update-grub`
