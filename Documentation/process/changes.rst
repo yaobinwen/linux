@@ -44,18 +44,18 @@ xfsprogs               2.6.0            xfs_db -V
 squashfs-tools         4.0              mksquashfs -version
 btrfs-progs            0.18             btrfsck
 pcmciautils            004              pccardctl -V
-quota-tools            3.09             quota -V
+quota                  3.09             quota -V
 PPP                    2.4.0            pppd --version
-nfs-utils              1.0.5            showmount --version
+nfs-common             1.0.5            showmount --version
 procps                 3.2.0            ps --version
 oprofile               0.9              oprofiled --version
 udev                   081              udevd --version
-grub                   0.93             grub --version || grub-install --version
+grub2-common           0.93             grub --version || grub-install --version
 mcelog                 0.6              mcelog --version
 iptables               1.4.2            iptables -V
-openssl & libcrypto    1.0.0            openssl version
+openssl & libcrypto++6 1.0.0            openssl version
 bc                     1.06.95          bc --version
-Sphinx\ [#f1]_	       1.3		sphinx-build --version
+python3-sphinx\ [#f1]_ 1.3              sphinx-build --version
 ====================== ===============  ========================================
 
 .. [#f1] Sphinx is needed only to build the Kernel documentation
