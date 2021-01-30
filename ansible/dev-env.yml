@@ -1,0 +1,4 @@
+- name: Set up the Linux kernel development environment.
+  hosts: all
+  roles:
+    - dev-env

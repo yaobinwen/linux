@@ -1,0 +1,83 @@
+# Ref: [mcelog installation](https://mcelog.org/installation.html)
+
+- name: Get the status of {{mcelog_clone_dir}}.
+  stat:
+    path: "{{mcelog_clone_dir}}"
+  register: mcelog_stat
+
+- name: Fail if {{mcelog_clone_dir}} exists but is not a directory.
+  when: mcelog_stat.stat.exists and not mcelog_stat.stat.isdir
+  fail:
+    msg: "{{mcelog_stat}} already exists but is not a directory."
+
+- name: Get the source code.
+  block:
+  - name: Clone the source code if {{mcelog_clone_dir}} does not exist.
+    when: not mcelog_stat.stat.exists
+    git:
+      clone: yes
+      repo: git://git.kernel.org/pub/scm/utils/cpu/mce/mcelog.git
+      dest: "{{mcelog_clone_dir}}"
+      version: master
+
+  - name: Pull the source code if {{mcelog_clone_dir}} already exists.
+    when: mcelog_stat.stat.exists
+    git:
+      update: yes
+      repo: git://git.kernel.org/pub/scm/utils/cpu/mce/mcelog.git
+      dest: "{{mcelog_clone_dir}}"
+      version: master
+
+- name: Build mcelog.
+  block:
+  - name: Get the status of {{mcelog_clone_dir}}.
+    stat:
+      path: "{{mcelog_clone_dir}}"
+    register: mcelog_stat
+
+  - name: Assert {{mcelog_clone_dir}} exists.
+    assert:
+      that:
+      - mcelog_stat.stat.exists
+      - mcelog_stat.stat.isdir
+
+  - name: Build mcelog.
+    command:
+      argv:
+        - make
+      chdir: "{{mcelog_clone_dir}}"
+
+  - name: Install mcelog.
+    become: yes
+    command:
+      argv:
+        - make
+        - install
+      chdir: "{{mcelog_clone_dir}}"
+
+- name: Start the mcelog service.
+  block:
+  - name: Install mcelog.service.
+    become: yes
+    copy:
+      src: "{{mcelog_clone_dir}}/mcelog.service"
+      dest: /usr/lib/systemd/system/mcelog.service
+
+  - name: Enable and start mcelog.service.
+    become: yes
+    systemd:
+      name: mcelog.service
+      daemon_reload: yes
+      enabled: yes
+      state: restarted
+
+  - name: Get the status of `/dev/mcelog`.
+    stat:
+      path: /dev/mcelog
+    register: dev_mcelog_stat
+
+  - name: Verify `/dev/mcelog` is a character device file.
+    assert:
+      that:
+        - dev_mcelog_stat.stat.exists
+        - dev_mcelog_stat.stat.ischr

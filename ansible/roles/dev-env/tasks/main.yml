@@ -1,0 +1,54 @@
+- name: Update APT cache.
+  become: yes
+  apt:
+    cache_valid_time: 900
+    update_cache: yes
+  changed_when: false
+
+# See `Documentation/process/changes.rst` for the required tools.
+- name: Install the development tools.
+  become: yes
+  apt:
+    name:
+      - gcc-9
+      - clang-9
+      - make
+      - binutils
+      - flex
+      - bison
+      - util-linux
+      - kmod
+      - e2fsprogs
+      - jfsutils
+      - reiserfsprogs
+      - xfsprogs
+      - squashfs-tools
+      - btrfs-progs
+      - pcmciautils
+      - quota
+      - ppp
+      - nfs-common
+      - procps
+      - oprofile
+      - udev
+      - grub2-common
+      - iptables
+      - openssl
+      - libcrypto++6
+      - bc
+      - python3-sphinx
+
+# These tools are not listed on `Documentation/process/changes.rst` but are
+# also needed for kernel development.
+- name: Install the other needed tools.
+  become: yes
+  apt:
+    name:
+      # Missing from the `changes.rst` list?
+      - libssl-dev
+      # `make` calls `cc` which is created by `build-essential`.
+      - build-essential
+      # `make menuconfig` needs `ncurses`.
+      - ncurses-dev
+
+- include_tasks: "mcelog.yml"
