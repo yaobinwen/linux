@@ -1,0 +1,19 @@
+- name: Assert the necessary variables.
+  assert:
+    that:
+      - new_kernel_version is defined
+
+- name: Generate the `initramfs` image for the new kernel.
+  become: yes
+  command:
+    argv:
+      - update-initramfs
+      - -c
+      - -k
+      - "{{new_kernel_version}}"
+
+- name: Update grub.
+  become: yes
+  command:
+    argv:
+      - update-grub
