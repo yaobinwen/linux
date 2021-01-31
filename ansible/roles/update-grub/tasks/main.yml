@@ -11,9 +11,23 @@
       - -c
       - -k
       - "{{new_kernel_version}}"
+  register: initramfs_output
+
+# NOTE(ywen): `update-initramfs` doesn't seem to exit with error even if it
+# doesn't succeed. When there are errors, `stderr` is not empty, so we consider
+# it a failure whenever `stderr` is not empty. Better be more cautious.
+- name: Check if `update-initramfs` has stderr output.
+  assert:
+    that:
+      - initramfs_output.stderr == ""
+      - initramfs_output.stderr_lines | length == 0
 
 - name: Update grub.
   become: yes
   command:
     argv:
       - update-grub
+
+# NOTE(ywen): We don't check `stderr` for `update-grub` because, in contrast,
+# `update-grub` seems to output everything to `stderr`. If further verification
+# is needed, we need to grep its output for certain keywords.
