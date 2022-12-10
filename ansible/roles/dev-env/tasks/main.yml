@@ -37,6 +37,9 @@
       - libcrypto++6
       - bc
       - python3-sphinx
+      # Resolve error: Cannot resolve BTF IDs for CONFIG_DEBUG_INFO_BTF, please
+      # install libelf-dev, libelf-devel or elfutils-libelf-devel
+      - libelf-dev
 
 # These tools are not listed on `Documentation/process/changes.rst` but are
 # also needed for kernel development.
