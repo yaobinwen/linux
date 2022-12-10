@@ -25,7 +25,9 @@ README by ywen
 How to Build
 ------------
 
-Reference: [How to Compile a Linux Kernel](https://www.linux.com/topic/desktop/how-compile-linux-kernel-0/)
+References:
+- [1] [How to Build Linux Kernel From Scratch {Step-By-Step Guide}](https://phoenixnap.com/kb/build-linux-kernel)
+- [2] [How to Compile a Linux Kernel](https://www.linux.com/topic/desktop/how-compile-linux-kernel-0/)
 
 1. Install `ansible` (if not installed by the VM provisioner): `sudo ./ansible/ansible-bootstrap.sh`
 2. Install the necessary development tools:
@@ -37,11 +39,16 @@ Reference: [How to Compile a Linux Kernel](https://www.linux.com/topic/desktop/h
   - 3.3 `make menuconfig`
   - 3.4 You can use the default configuration, but make sure to `Save` in order to overwrite the configuration file (`.config`) so the later `make` wouldn't prompt questions.
     - The reason is: the `/boot/config-$(uname -r)` is for an older version of kernel, so its configuration file may not have the options that the newer version of kernel uses.
+  - 3.5 On Ubuntu, run the following two steps to disable the conflicting security certificates in order to avoid the build error `No rule to make target 'debian/canonical-certs.pem`:
+    - 3.5.1 `scripts/config --disable SYSTEM_TRUSTED_KEYS`
+    - 3.5.2 `scripts/config --disable SYSTEM_REVOCATION_KEYS`
 4. Build the kernel:
   - 4.1 `cd` into the root directory of kernel source.
   - 4.2 `make` (which will take long time, around 4 ~ 5 hours)
+    - Note: Because of steps 3.5.1 and 3.5.2, you will be asked about the generation of new certificates. Press `Enter` to use the default options.
   - 4.3 `sudo make modules_install` (which will take a few minutes)
   - 4.4 `sudo make install`
 5. Enable the kernel for boot:
   - 5.1 `cd ansible`
   - 5.2 `ansible-playbook -K -vvv -e "new_kernel_version=5.10.0+" update-grub.yml`
+    - The steps 4.3 and 4.4 show the kernel version such as `DEPMOD  5.10.0+` or `/boot/initrd.img-5.10.0+`.
