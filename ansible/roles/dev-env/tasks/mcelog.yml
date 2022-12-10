@@ -55,6 +55,18 @@
         - install
       chdir: "{{mcelog_clone_dir}}"
 
+  # Clean up the build directory so, if needed, we can run `make` again.
+  # `make install` probably creates `version.tmp` as root so if we don't clean
+  # it, `make` will encounter permission error because it can't create the
+  # file `version.tmp`.
+  - name: Clean up the build directory so we can use it next time.
+    become: yes
+    command:
+      argv:
+        - make
+        - clean
+      chdir: "{{mcelog_clone_dir}}"
+
 - name: Start the mcelog service.
   block:
   - name: Install mcelog.service.

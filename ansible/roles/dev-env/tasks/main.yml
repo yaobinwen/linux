@@ -54,4 +54,11 @@
       # `make menuconfig` needs `ncurses`.
       - ncurses-dev
 
-- include_tasks: "mcelog.yml"
+- name: Get the load state of `mcelog.service`.
+  systemd:
+    unit: mcelog.service
+  register: mcelog_srv
+
+- name: Build and install `mcelog` if it doesn't exist.
+  when: mcelog_srv.status.ActiveState != "active"
+  include_tasks: "mcelog.yml"
