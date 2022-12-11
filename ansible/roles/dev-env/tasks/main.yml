@@ -40,6 +40,15 @@
       # Resolve error: Cannot resolve BTF IDs for CONFIG_DEBUG_INFO_BTF, please
       # install libelf-dev, libelf-devel or elfutils-libelf-devel
       - libelf-dev
+      # Resolve error:
+      # ```
+      # BTF: .tmp_vmlinux.btf: pahole (pahole) is not available
+      # Failed to generate BTF for vmlinux
+      # Try to disable CONFIG_DEBUG_INFO_BTF
+      # make: *** [Makefile:1170: vmlinux] Error 1
+      # ```
+      # See https://stackoverflow.com/q/61657707/630364
+      - dwarves
 
 # These tools are not listed on `Documentation/process/changes.rst` but are
 # also needed for kernel development.
